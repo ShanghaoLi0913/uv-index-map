@@ -1,16 +1,42 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 
-// Sample UV index data for cities
-const cities = [
-  { name: 'Albuquerque', uvIndex: 5.5, lat: 35.0844, lon: -106.6504 },
-  { name: 'Los Angeles', uvIndex: 6.2, lat: 34.0522, lon: -118.2437 },
-  { name: 'New York', uvIndex: 4.8, lat: 40.7128, lon: -74.0060 },
-  // Add more cities as needed
-];
-
 function MapComponent() {
+  const [cities, setCities] = useState([]);
+
+  useEffect(() => {
+    // Fetch the cities.lst file from the hosted URL
+    fetch('https://example.com/cities.lst')  // Replace with your actual URL
+      .then(response => response.text())
+      .then(data => {
+        const parsedCities = parseCitiesLst(data);
+        setCities(parsedCities);
+      })
+      .catch(error => console.error('Error loading cities:', error));
+  }, []);
+
+  // Function to parse the cities.lst file
+  const parseCitiesLst = (data) => {
+    const lines = data.split('\n');
+    const citiesArray = [];
+
+    lines.forEach(line => {
+      const parts = line.trim().split(/\s+/);
+      if (parts.length >= 6) {
+        const city = {
+          name: parts.slice(0, -6).join(' '), // City name (handles names with spaces)
+          lat: parseFloat(parts[parts.length - 6]), // Latitude
+          lon: parseFloat(parts[parts.length - 5]), // Longitude
+          uvIndex: Math.random() * 10 + 1, // Simulated UV index for demo purposes
+        };
+        citiesArray.push(city);
+      }
+    });
+
+    return citiesArray;
+  };
+
   return (
     <MapContainer center={[39.8283, -98.5795]} zoom={4} style={{ height: "600px", width: "100%" }}>
       <TileLayer
@@ -21,7 +47,7 @@ function MapComponent() {
         <Marker key={index} position={[city.lat, city.lon]}>
           <Popup>
             <strong>{city.name}</strong><br />
-            UV Index: {city.uvIndex}
+            UV Index: {city.uvIndex.toFixed(2)}
           </Popup>
         </Marker>
       ))}
