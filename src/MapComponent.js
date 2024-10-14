@@ -1,58 +1,80 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import axios from 'axios';
 
-function MapComponent() {
+const MyMap = () => {
   const [cities, setCities] = useState([]);
 
   useEffect(() => {
-    // Fetch the cities.lst file from the hosted URL
-    fetch('https://example.com/cities.lst')  // Replace with your actual URL
+    fetch(process.env.PUBLIC_URL + '/cities.lst')
       .then(response => response.text())
-      .then(data => {
-        const parsedCities = parseCitiesLst(data);
+      .then(text => {
+        console.log('Cities data:', text);  // Log full cities data
+        const parsedCities = text.split("\n").map((line, index) => {
+          const parts = line.trim().split(/\s+/);
+          const latitude = parseFloat(parts[3]);  // Update to the correct index
+          const longitude = parseFloat(parts[4]); // Update to the correct index
+
+          if (!isNaN(latitude) && !isNaN(longitude)) {
+            console.log('Parsed City Data:', {
+              city: parts[0],
+              state: parts[1],
+              latitude: latitude,
+              longitude: longitude,
+              elevation: parseFloat(parts[5]), // Elevation index
+              stationCode: parts[6]  // Correct station code index
+            });
+            return {
+              city: parts[0],
+              state: parts[1],
+              latitude: latitude,
+              longitude: longitude,
+              elevation: parseFloat(parts[5]),
+              stationCode: parts[6]  // Correctly extract station code
+            };
+          } else {
+            return null; // Skip invalid data
+          }
+        }).filter(city => city !== null); // Remove null entries
+
+        console.log('Parsed Cities:', parsedCities);  // Log the parsed cities
         setCities(parsedCities);
       })
-      .catch(error => console.error('Error loading cities:', error));
+      .catch(error => console.error('Error loading file:', error));
   }, []);
 
-  // Function to parse the cities.lst file
-  const parseCitiesLst = (data) => {
-    const lines = data.split('\n');
-    const citiesArray = [];
-
-    lines.forEach(line => {
-      const parts = line.trim().split(/\s+/);
-      if (parts.length >= 6) {
-        const city = {
-          name: parts.slice(0, -6).join(' '), // City name (handles names with spaces)
-          lat: parseFloat(parts[parts.length - 6]), // Latitude
-          lon: parseFloat(parts[parts.length - 5]), // Longitude
-          uvIndex: Math.random() * 10 + 1, // Simulated UV index for demo purposes
-        };
-        citiesArray.push(city);
+  useEffect(() => {
+    const fetchUvData = async () => {
+      for (const city of cities) {
+        try {
+          const response = await axios.get(`${process.env.PUBLIC_URL}/2007/${city.stationCode}_07.dat`);
+          console.log(`UV data for ${city.city}:`, response.data);
+        } catch (error) {
+          console.error(`Error fetching UV data for ${city.city}:`, error);
+        }
       }
-    });
+    };
 
-    return citiesArray;
-  };
+    if (cities.length > 0) {
+      fetchUvData();
+    }
+  }, [cities]);
 
   return (
-    <MapContainer center={[39.8283, -98.5795]} zoom={4} style={{ height: "600px", width: "100%" }}>
+    <MapContainer center={[37.7749, -122.4194]} zoom={5} style={{ height: "100vh", width: "100%" }}>
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
       {cities.map((city, index) => (
-        <Marker key={index} position={[city.lat, city.lon]}>
+        <Marker key={index} position={[city.latitude, city.longitude]}>
           <Popup>
-            <strong>{city.name}</strong><br />
-            UV Index: {city.uvIndex.toFixed(2)}
+            {city.city}, {city.state} <br /> Elevation: {city.elevation} meters
           </Popup>
         </Marker>
       ))}
     </MapContainer>
   );
-}
+};
 
-export default MapComponent;
+export default MyMap;
