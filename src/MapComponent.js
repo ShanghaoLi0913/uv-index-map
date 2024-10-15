@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import L from 'leaflet'; // Import Leaflet
+import L from 'leaflet';
 import Papa from 'papaparse';
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -34,12 +34,28 @@ const MyMap = () => {
             .catch(error => console.error('Error loading cities:', error));
 
         // Load GeoJSON data for state boundaries
-        fetch(process.env.PUBLIC_URL + '/us-states.json') // Adjust the path accordingly
+        fetch(process.env.PUBLIC_URL + '/us-states.json')
             .then(response => response.json())
             .then(data => {
                 setGeoData(data);
             })
             .catch(error => console.error('Error loading GeoJSON:', error));
+
+        // Load UV data
+        Papa.parse(process.env.PUBLIC_URL + '/uv_data.dot', {
+            download: true,
+            header: true,
+            complete: (results) => {
+                const parsedUvData = results.data.map(row => ({
+                    stationCode: row['Station Name'].trim(),
+                    ClearSkyUVI: parseFloat(row['Clear Sky UVI']) || null,
+                })).filter(row => row.ClearSkyUVI !== null);
+
+                console.log('Parsed UV Data:', parsedUvData);
+                setUvData(parsedUvData);
+            },
+            error: (error) => console.error('Error loading UV data:', error),
+        });
     }, []);
 
     const loadStationCoordinates = (parsedCities) => {
@@ -71,8 +87,26 @@ const MyMap = () => {
         });
     };
 
+    const getAverageUvIndexForState = (stateName) => {
+        const stateUvData = uvData.filter(data => {
+            return cities.some(city => city.stationCode === data.stationCode && city.state === stateName);
+        });
+
+        console.log(`State: ${stateName}, UV Data:`, stateUvData);
+
+        if (stateUvData.length === 0) {
+            console.log(`No UV data for state: ${stateName}`);
+            return 0; // Return 0 for states with no UV data
+        }
+
+        const totalUv = stateUvData.reduce((acc, cur) => acc + cur.ClearSkyUVI, 0);
+        const averageUv = totalUv / stateUvData.length;
+
+        console.log(`State: ${stateName}, Average UV Index: ${averageUv}`);
+        return averageUv;
+    };
+
     const getColor = (uvIndex) => {
-        // Define color based on UV index ranges
         return uvIndex > 8 ? 'red' :
                uvIndex > 6 ? 'orange' :
                uvIndex > 3 ? 'yellow' :
@@ -87,22 +121,33 @@ const MyMap = () => {
             {geoData && (
                 <GeoJSON
                     data={geoData}
-                    style={(feature) => ({
-                        fillColor: getColor(/* get UV index for the state here */),
-                        weight: 2,
-                        opacity: 1,
-                        color: 'white',
-                        fillOpacity: 0.7,
-                    })}
+                    style={(feature) => {
+                        const stateName = feature.properties.name; // Adjust according to your GeoJSON structure
+                        const avgUvIndex = getAverageUvIndexForState(stateName);
+                        return {
+                            fillColor: getColor(avgUvIndex),
+                            weight: 2,
+                            opacity: 1,
+                            color: 'white',
+                            fillOpacity: 0.7,
+                        };
+                    }}
                 />
             )}
-            {cities.map((city, index) => (
-                <Marker key={index} position={[city.latitude, city.longitude]}>
-                    <Popup>
-                        {city.city}, {city.state} <br /> Station Code: {city.stationCode}
-                    </Popup>
-                </Marker>
-            ))}
+            {cities.map((city, index) => {
+                const uvInfo = uvData.find(data => data.stationCode === city.stationCode);
+                const clearSkyUVI = uvInfo ? uvInfo.ClearSkyUVI : 'N/A'; // Handle case where UV data is not available
+
+                return (
+                    <Marker key={index} position={[city.latitude, city.longitude]}>
+                        <Popup>
+                            {city.city}, {city.state} <br />
+                            Station Code: {city.stationCode} <br />
+                            Clear Sky UVI: {clearSkyUVI}
+                        </Popup>
+                    </Marker>
+                );
+            })}
         </MapContainer>
     );
 };
