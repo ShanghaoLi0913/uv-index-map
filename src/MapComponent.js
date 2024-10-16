@@ -1,30 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { MapContainer, TileLayer, GeoJSON, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
 import Papa from 'papaparse';
-import Legend from './Legend'; // Import the Legend component
-
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-    iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-    iconUrl: require('leaflet/dist/images/marker-icon.png'),
-    shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
-});
+import Legend from './Legend'; //import the component
 
 const MyMap = () => {
     const [geoData, setGeoData] = useState(null);
     const [uvData, setUvData] = useState([]);
+    const [selectedState, setSelectedState] = useState(null); // State to track the selected state
 
     useEffect(() => {
         // Load GeoJSON data for state boundaries
         fetch(process.env.PUBLIC_URL + '/us-states.json')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok: ' + response.statusText);
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
                 setGeoData(data);
             })
@@ -54,36 +42,42 @@ const MyMap = () => {
         return '#FFFFFF'; // Default color if out of range
     };
 
+    const getBorderColor = (stateName) => {
+        return selectedState === stateName ? '#FF0000' : 'white'; // Red border if selected
+    };
+
     return (
-        <div>
-            <MapContainer center={[37.7749, -122.4194]} zoom={5} style={{ height: "100vh", width: "100%" }}>
-                <TileLayer
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        <MapContainer center={[37.7749, -122.4194]} zoom={5} style={{ height: "100vh", width: "100%" }}>
+            <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            {geoData && (
+                <GeoJSON
+                    data={geoData}
+                    style={(feature) => {
+                        const stateUvData = uvData.find(data => data.state === feature.properties.name);
+                        return {
+                            fillColor: getColor(stateUvData ? stateUvData.value : 0),
+                            weight: 2,
+                            opacity: 1,
+                            color: getBorderColor(feature.properties.name), // Change border color based on selection
+                            fillOpacity: 0.7,
+                        };
+                    }}
+                    onEachFeature={(feature, layer) => {
+                        const stateUvData = uvData.find(data => data.state === feature.properties.name);
+                        const average = stateUvData ? stateUvData.value : 0;
+                        layer.bindPopup(`<strong>${feature.properties.name}</strong><br />Average: ${average}`);
+                        layer.on({
+                            click: () => {
+                                setSelectedState(feature.properties.name); // Set the clicked state as selected
+                            }
+                        });
+                    }}
                 />
-                {geoData && (
-                    <GeoJSON
-                        data={geoData}
-                        style={(feature) => {
-                            const stateUvData = uvData.find(data => data.state === feature.properties.name);
-                            return {
-                                fillColor: getColor(stateUvData ? stateUvData.value : 0),
-                                weight: 2,
-                                opacity: 1,
-                                color: 'white',
-                                fillOpacity: 0.7,
-                            };
-                        }}
-                        // Add popup functionality to each state
-                        onEachFeature={(feature, layer) => {
-                            const stateUvData = uvData.find(data => data.state === feature.properties.name);
-                            const average = stateUvData ? stateUvData.value : 0;
-                            layer.bindPopup(`<strong>${feature.properties.name}</strong><br />Average: ${average}`);
-                        }}
-                    />
-                )}
-            </MapContainer>
-            <Legend /> {/* Include the Legend component here */}
-        </div>
+            )}
+            <Legend selectedState={selectedState} /> {/* Pass selectedState to Legend */}
+        </MapContainer>
     );
 };
 
