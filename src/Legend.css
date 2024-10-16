@@ -1,0 +1,21 @@
+.legend {
+    position: absolute;
+    bottom: 30px;
+    left: 30px;
+    background: white;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.legend h4 {
+    margin: 0;
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    margin-right: 10px;
+}
