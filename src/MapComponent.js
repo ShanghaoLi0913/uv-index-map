@@ -96,7 +96,7 @@ const MyMap = () => {
                         borderRadius: "5px",
                         boxShadow: "0 2px 10px rgba(0,0,0,0.5)"
                     }}>
-                        <UvBarChart uvData={uvData} /> {/* Bar chart in the top right corner */}
+                        <UvBarChart uvData={uvData} /> Bar chart in the top right corner
                     </div>
                 )}
             </div>
