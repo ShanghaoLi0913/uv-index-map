@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { MapContainer, TileLayer, GeoJSON, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import Papa from 'papaparse';
-import Legend from './Legend'; //import the component
+import Legend from './Legend'; // import the component
 
 const MyMap = () => {
     const [geoData, setGeoData] = useState(null);
@@ -34,12 +34,13 @@ const MyMap = () => {
     }, []);
 
     const getColor = (value) => {
-        if (value >= 74 && value <= 131) return '#FFFF00'; // Yellow
-        if (value > 131 && value <= 165) return '#A0D9D3'; // Light Teal
-        if (value > 165 && value <= 186) return '#00BFFF'; // Medium Teal
-        if (value > 186 && value <= 198) return '#0066FF'; // Dark Blue
-        if (value > 198 && value <= 247) return '#00008B'; // Navy
-        return '#FFFFFF'; // Default color if out of range
+        console.log(value);
+        // Updated color schema with varying intensities of blue
+        if (value > 74 && value <= 131) return '#FFFFE0'; // Light Yellow
+        if (value > 131 && value <= 165) return '#FFD700'; // Gold
+        if (value > 165 && value <= 186) return '#FFA500'; // Orange
+        if (value > 186 && value <= 198) return '#FF8C00'; // Dark Orange
+        return '#FF4500'; // Red-Orange for values above 198
     };
 
     const getBorderColor = (stateName) => {
