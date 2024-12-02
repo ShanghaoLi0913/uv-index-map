@@ -63,6 +63,20 @@ const MyMap = ({ uvData, setUvData }) => {
     return selectedCounty === countyFIPS ? '#FF0000' : 'white'; // Red border if the county is selected
   };
 
+  // Calculate height dynamically based on the number of counties
+  const calculateChartHeight = () => {
+    const countiesCount = stateUvData.length;
+    const minHeight = 300; // Minimum height
+    const maxHeight = 600; // Maximum height
+    const heightPerCounty = 30; // Height per county (you can adjust this value)
+
+    let dynamicHeight = countiesCount * heightPerCounty;
+    if (dynamicHeight < minHeight) dynamicHeight = minHeight;
+    if (dynamicHeight > maxHeight) dynamicHeight = maxHeight;
+
+    return dynamicHeight;
+  };
+
   return (
     <div className="map-container" style={{ position: "relative", height: "100%" }}>
       <MapContainer center={[37.7749, -122.4194]} zoom={5} style={{ height: "100%", width: "100%" }}>
@@ -109,7 +123,8 @@ const MyMap = ({ uvData, setUvData }) => {
           padding: "10px",
           borderRadius: "5px",
           boxShadow: "0 2px 10px rgba(0,0,0,0.5)",
-          width: '300px' // adjust width as needed
+          width: '300px', // adjust width as needed
+          height: `${calculateChartHeight()}px`, // Dynamically adjust height
         }}>
           <UvBarChartCounty uvData={stateUvData} />
         </div>
