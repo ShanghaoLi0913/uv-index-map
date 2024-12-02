@@ -24,7 +24,7 @@ h1 {
 /* Main container holding the map, placeholder, and bar chart */
 .main-container {
   display: flex;
-  justify-content: space-between; /* Ensure elements are spaced correctly */
+  justify-content: space-between; /* Space out map, placeholder, and bar chart */
   align-items: stretch; /* Stretch all child components to fill container height */
   width: 90%; /* Container width for proper centering */
   height: 80%; /* Ensures map and chart occupy 80% of the height */
@@ -35,22 +35,22 @@ h1 {
 /* Placeholder section on the left */
 .placeholder {
   width: 20%; /* Placeholder takes 20% of the width */
-  background-color: #fff; /* Light gray background */
+  background-color: #e0e0e0; /* Light gray background */
   margin-right: 20px; /* Space between placeholder and map */
   height: 100%; /* Ensure placeholder takes full height */
 }
 
 /* Map container */
 .map-container {
-  width: 50%; /* Map takes 50% of the available width */
+  width: 55%; /* Adjusted to take 55% of the available width */
   height: 100%; /* Ensure the map fills the container height */
-  background-color: #fff; /* Debugging background color */
+  background-color: lightblue; /* Debugging background color */
   position: relative; /* To properly position elements like the map */
 }
 
 /* Bar chart container */
 .bar-chart-container {
-  width: 25%; /* Bar chart takes 25% of the width */
+  width: 20%; /* Adjusted width for the bar chart */
   height: 100%; /* Ensure bar chart takes full height */
   padding: 10px;
   background-color: #fff;

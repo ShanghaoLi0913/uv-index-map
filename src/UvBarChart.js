@@ -1,18 +1,22 @@
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
 import PropTypes from 'prop-types';
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js';
+
+// Register Chart.js components
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
 
 const UvBarChart = ({ uvData }) => {
     const getBarColor = (value) => {
-        if (value >= 74 && value <= 131) return 'rgba(255, 215, 0, 0.6)'; // Light Yellow
-        if (value > 131 && value <= 165) return 'rgba(255, 204, 0, 0.6)'; // Medium Yellow
-        if (value > 165 && value <= 186) return 'rgba(255, 153, 0, 0.6)'; // Dark Yellow
-        if (value > 186 && value <= 198) return 'rgba(255, 102, 0, 0.6)'; // Light Orange
-        return 'rgba(255, 0, 0, 0.6)'; // Red for values above 198
+        if (value < 74) return 'rgba(255, 215, 0, 0.6)';
+        if (value >= 74 && value <= 131) return 'rgba(255, 204, 0, 0.6)';
+        if (value > 131 && value <= 165) return 'rgba(255, 153, 0, 0.6)';
+        if (value > 165 && value <= 186) return 'rgba(255, 102, 0, 0.6)';
+        return 'rgba(255, 0, 0, 0.6)';
     };
 
     const data = {
-        labels: uvData.map(item => item.County), // Use County for the labels
+        labels: uvData.map(item => item.County),
         datasets: [
             {
                 label: 'UV Index',
@@ -30,8 +34,7 @@ const UvBarChart = ({ uvData }) => {
             x: {
                 title: {
                     display: true,
-                    //text: 'UV Index',
-                    text: 'Erythemal UV Irradiance at ground level (in W/m2)'
+                    text: 'UV Index',
                 },
                 ticks: {
                     padding: 10,
@@ -41,7 +44,7 @@ const UvBarChart = ({ uvData }) => {
                 beginAtZero: true,
                 title: {
                     display: true,
-                    text: 'Counties', // Update this to Counties instead of States
+                    text: 'Counties',
                 },
                 ticks: {
                     color: '#000',
@@ -54,8 +57,8 @@ const UvBarChart = ({ uvData }) => {
         },
         elements: {
             bar: {
-                barPercentage: 0.8, // Adjust this value to change the width of the bars
-                categoryPercentage: 0.5, // Adjust this value to change the spacing between the bars
+                barPercentage: 0.8,
+                categoryPercentage: 0.5,
             },
         },
         plugins: {
@@ -71,18 +74,11 @@ const UvBarChart = ({ uvData }) => {
             },
         },
         responsive: true,
-        maintainAspectRatio: false, // Allows the chart to fill the height of the container
+        maintainAspectRatio: false,
     };
 
     return (
-        <div style={{
-            width: '400px',
-            height: '600px', // Fixed height for the chart (adjust as needed)
-            backgroundColor: '#fff',
-            borderRadius: '8px',
-            boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-            padding: '10px',
-        }}>
+        <div style={{ width: '100%', height: '100%' }}>
             <Bar data={data} options={options} />
         </div>
     );
@@ -91,7 +87,8 @@ const UvBarChart = ({ uvData }) => {
 UvBarChart.propTypes = {
     uvData: PropTypes.arrayOf(
         PropTypes.shape({
-            County: PropTypes.string.isRequired, // Use County instead of state
+            County: PropTypes.string.isRequired,
+            CountyFIPS: PropTypes.string.isRequired,
             value: PropTypes.number.isRequired,
         })
     ).isRequired,
