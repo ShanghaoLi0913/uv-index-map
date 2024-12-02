@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import MapComponent from './MapComponent';
-import UvBarChartCounty from './UvBarChartCounty'; // Import UvBarChartCounty
-import UvBarChartState from './UvBarChartState'; // Import UvBarChartState
+import UvBarChartState from './UvBarChartState'; // Assuming you're using the renamed chart
 import './App.css';
 
 function App() {
@@ -18,8 +17,8 @@ function App() {
           <MapComponent uvData={uvData} setUvData={setUvData} />
         </div>
         <div className="bar-chart-container">
-          <UvBarChartState uvData={uvData} /> {/* Use UvBarChartState */}
-          <UvBarChartCounty uvData={uvData} /> {/* Use UvBarChartCounty */}
+          {/* Only render the State bar chart here */}
+          <UvBarChartState uvData={uvData} />
         </div>
       </div>
     </div>
