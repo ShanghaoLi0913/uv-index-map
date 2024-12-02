@@ -6,7 +6,7 @@ import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, Li
 // Register Chart.js components
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
 
-const UvBarChart = ({ uvData }) => {
+const UvBarChartState = ({ uvData }) => {
     const getBarColor = (value) => {
         if (value < 74) return 'rgba(255, 215, 0, 0.6)';
         if (value >= 74 && value <= 131) return 'rgba(255, 204, 0, 0.6)';
@@ -84,7 +84,7 @@ const UvBarChart = ({ uvData }) => {
     );
 };
 
-UvBarChart.propTypes = {
+UvBarChartState.propTypes = {
     uvData: PropTypes.arrayOf(
         PropTypes.shape({
             County: PropTypes.string.isRequired,
@@ -94,4 +94,4 @@ UvBarChart.propTypes = {
     ).isRequired,
 };
 
-export default UvBarChart;
+export default UvBarChartState;

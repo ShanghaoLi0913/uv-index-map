@@ -24,7 +24,7 @@ h1 {
 /* Main container holding the map, placeholder, and bar chart */
 .main-container {
   display: flex;
-  justify-content: space-between; /* Space out map, placeholder, and bar chart */
+  justify-content: center; /* Center all elements horizontally */
   align-items: stretch; /* Stretch all child components to fill container height */
   width: 90%; /* Container width for proper centering */
   height: 80%; /* Ensures map and chart occupy 80% of the height */
@@ -40,17 +40,15 @@ h1 {
   height: 100%; /* Ensure placeholder takes full height */
 }
 
-/* Map container */
 .map-container {
-  width: 55%; /* Adjusted to take 55% of the available width */
-  height: 100%; /* Ensure the map fills the container height */
-  background-color: lightblue; /* Debugging background color */
-  position: relative; /* To properly position elements like the map */
+  position: relative; /* Ensures that child elements with absolute positioning work */
+  height: 80vh; /* Adjust as needed */
+  width: 100%;
 }
 
 /* Bar chart container */
 .bar-chart-container {
-  width: 20%; /* Adjusted width for the bar chart */
+  width: 25%; /* Bar chart takes 25% of the width */
   height: 100%; /* Ensure bar chart takes full height */
   padding: 10px;
   background-color: #fff;
