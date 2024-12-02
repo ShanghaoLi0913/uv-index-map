@@ -12,7 +12,7 @@ const UvBarChart = ({ uvData }) => {
     };
 
     const data = {
-        labels: uvData.map(item => item.state),
+        labels: uvData.map(item => item.County), // Use County for the labels
         datasets: [
             {
                 label: 'UV Index',
@@ -30,7 +30,8 @@ const UvBarChart = ({ uvData }) => {
             x: {
                 title: {
                     display: true,
-                    text: 'UV Index',
+                    //text: 'UV Index',
+                    text: 'Erythemal UV Irradiance at ground level (in W/m2)'
                 },
                 ticks: {
                     padding: 10,
@@ -40,7 +41,7 @@ const UvBarChart = ({ uvData }) => {
                 beginAtZero: true,
                 title: {
                     display: true,
-                    text: 'States',
+                    text: 'Counties', // Update this to Counties instead of States
                 },
                 ticks: {
                     color: '#000',
@@ -90,7 +91,7 @@ const UvBarChart = ({ uvData }) => {
 UvBarChart.propTypes = {
     uvData: PropTypes.arrayOf(
         PropTypes.shape({
-            state: PropTypes.string.isRequired,
+            County: PropTypes.string.isRequired, // Use County instead of state
             value: PropTypes.number.isRequired,
         })
     ).isRequired,
