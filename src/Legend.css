@@ -1,16 +1,35 @@
+/* Legend.css */
 .legend {
     position: absolute;
-    bottom: 100px;
-    left: 20px;
+    bottom: 20px; /* Adjust the position from the bottom */
+    left: 20px; /* Adjust the position from the left */
     background: white;
     padding: 10px;
     border-radius: 5px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
     z-index: 1000;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
 }
 
-.legend h4 {
-    margin: 0;
+.legend-title {
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.legend-title span {
+    font-size: 12px;
+    font-weight: normal;
+}
+
+/* Use flexbox to align the color blocks and labels */
+.legend-item {
+    display: flex;
+    align-items: center; /* Vertically center the items */
+    margin-bottom: 5px;
 }
 
 .legend-color {
@@ -18,4 +37,8 @@
     height: 20px;
     display: inline-block;
     margin-right: 10px;
+}
+
+.legend-label {
+    font-size: 14px;
 }

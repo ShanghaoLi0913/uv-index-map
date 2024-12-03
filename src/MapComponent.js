@@ -4,6 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import Papa from 'papaparse';
 import { Chart, registerables } from 'chart.js';
 import UvBarChartCounty from './UvBarChartCounty'; // import the County bar chart component
+import Legend from './Legend'; // import the Legend component
 
 // Register necessary Chart.js components
 Chart.register(...registerables);
@@ -111,6 +112,9 @@ const MyMap = ({ uvData, setUvData }) => {
           />
         )}
       </MapContainer>
+
+      {/* Display Legend on the bottom left */}
+      <Legend /> 
 
       {/* Only display UvBarChartCounty inside the map when a county is selected */}
       {selectedCounty && (
